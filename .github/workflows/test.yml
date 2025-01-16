@@ -12,6 +12,7 @@ jobs:
         run: echo "Hello World!"
   
   deploy:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Get code
