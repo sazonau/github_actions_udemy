@@ -6,3 +6,13 @@ jobs:
     steps:
       - name: Output GitHub context
         run: echo "${{ toJSON(github) }}"
+  
+  retrieve_key:
+    runs-on: ubuntu-latest
+    steps:
+      - name: output secret
+        run: |
+          VALUE="${{ secrets.TEST_SSH_KEY }}"
+
+      - name: output var
+        run: echo $VALUE
