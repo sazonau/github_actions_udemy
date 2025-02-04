@@ -1,6 +1,6 @@
 name: Ex1_section3
 
-on: push
+on: [workflow_dispatch]
 
 jobs:
   myjob1:
