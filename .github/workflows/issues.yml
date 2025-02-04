@@ -1,3 +1,6 @@
+## here the workflow is triggered when a new issue is opened.
+## the workflow outputs info about this event
+
 name: Output information
 on:
   issues:
