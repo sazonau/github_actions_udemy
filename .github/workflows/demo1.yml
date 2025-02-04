@@ -14,8 +14,8 @@ on:
       - 'feat/**' #feat/new feat/new/new1
     paths-ignore:
       - '.github/workflows/*'
-    paths:
-      - 'src/*'
+    #paths:
+    #  - 'src/*'
 
 jobs:
   deploy:
