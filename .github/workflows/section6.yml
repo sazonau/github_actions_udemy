@@ -1,0 +1,36 @@
+name: Deploy website
+  push:
+    branches:
+      - main
+env:
+  MONGODB_DB_NAME: gha-demo # here we set env var on a workflow level (available for all jobs)
+jobs:
+  test:
+    environment: testing #here we specify environment created in GitHub UI. Under each env we can add secrets. Secret keys will be the same accross environments, but values will be different. So the secrets below will be used from the environment specified.
+    runs-on: ubuntu-latest
+    env: # here we set env var on a job level (available for all steps in a job)
+      MONGODB_CLUSTER_ADDRESS: cluster0.bla.mongodb.net
+      MONGODB_USERNAME: my_username
+      MONGODB_PASSWORD: 123
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        uses: actions/cache@v3 
+        with:
+          path: ~/.npm  
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }} 
+      - name: Install dependencies 
+        run: npm ci
+      - name: Run Server
+        run: npm start & npx wait-on http://127.0.0.1:$PORT #this is how you can reference the var (on Linux)
+      - name: Test code
+        run: npm test
+      - name: Output info
+        run: echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}" #here we retrieve the var from "env" object
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        run: echo "Deploying..."
