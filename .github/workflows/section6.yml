@@ -1,7 +1,7 @@
 name: Deploy website
-  push:
-    branches:
-      - main
+  #push:
+  #  branches:
+  #   - main
 env:
   MONGODB_DB_NAME: gha-demo # here we set env var on a workflow level (available for all jobs)
 jobs:
