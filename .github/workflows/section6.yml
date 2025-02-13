@@ -27,8 +27,8 @@ jobs:
         run: npm start & npx wait-on http://127.0.0.1:$PORT #this is how you can reference the var (on Linux)
       - name: Test code
         run: npm test
-      - name: Output info
-        run: echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}" #here we retrieve the var from "env" object
+      #- name: Output info
+      #  run: echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}" #here we retrieve the var from "env" object
   deploy:
     needs: build
     runs-on: ubuntu-latest
