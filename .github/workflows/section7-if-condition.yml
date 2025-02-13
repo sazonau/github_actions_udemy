@@ -1,0 +1,84 @@
+name: Deploy website
+on: [workflow_dispatch]
+  #push:
+  #  branches:
+  #    - main
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3 # by using it we tell github actions that the cached folder (in our case .npm) should be stored in someplace in github cloud and should be reused
+        with:
+          path: ~/.npm # which folder we need to cache (in this case we know that the "npm install" automatically creates this folder with cached stuff and we want to reuse this cached stuff)
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }} # key is used for retrieving the cache in the future & recreating a folder on the runner machine. Also it indicates if the cache should be discarded because ex. some dependencies were changed. That is why the name is not fully hardcoded, but has a dynamic part
+      - name: Install dependencies # this step will be executed anyway, but if ~/.npm already exists and tere were no changes, it will be reused
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3 # by using it we tell github actions that the cached folder (in our case .npm) should be stored in someplace in github cloud and should be reused
+        with:
+          path: ~/.npm # which folder we need to cache (in this case we know that the "npm install" automatically creates this folder with cached stuff and we want to reuse this cached stuff)
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }} # key is used for retrieving the cache in the future & recreating a folder on the runner machine. Also it indicates if the cache should be discarded because ex. some dependencies were changed. That is why the name is not fully hardcoded, but has a dynamic part
+      - name: Install dependencies # this step will be executed anyway, but if ~/.npm already exists and tere were no changes, it will be reused
+        run: npm ci
+      - name: Test code
+        continue-on-error: true # here we say that it will continue execution even though the step fails
+        id: test-code
+        run: npm run test
+      - name: Upload test report
+        #if: failure() && steps.test-code.outcome == 'failure' #here is a condition that specifies if a step should be executed. As per default, if the previous step fails, all other steps will be ignored. We need to add a special "function()"
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test.json
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      script-file: ${{ steps.publish.outputs.file }}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Build website
+        run: npm run build
+      - name: Publish JS filename
+        id: publish
+        run: find dist/assets/*.js -type f -execdir echo 'file={}' >> $GITHUB_OUTPUT ';'
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-files
+          path: | 
+            dist
+            package.json
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output contents
+        run: ls
+      - name: Output filename
+        run: echo "${{ needs.build.outputs.script-file }}"
+      - name: Deploy
+        run: echo "Deploying..."
+  report:
+    if: failure() #here we specify "if" on th ejob level. So this job will run if any other job fails.
+    # note that all jobs run in parallel, so this job might be skipped even though another job fails (it can happen because the job that will fail, will not be failed at the time "report" job is running). So jobs requires "need" part.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output info
+        run: |
+          echo "${{ github }}"

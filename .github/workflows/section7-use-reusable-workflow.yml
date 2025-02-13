@@ -1,4 +1,4 @@
-name: Deploy website
+name: Using reusable workflow
 on: 
   push:
     branches:
@@ -66,14 +66,8 @@ jobs:
             package.json
   deploy:
     needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Output contents
-        run: ls
-      - name: Output filename
-        run: echo "${{ needs.build.outputs.script-file }}"
-      - name: Deploy
-        run: echo "Deploying..."
+    uses: ./.github/workflows/section7-reusable-workflow.yml
+    
   report:
     if: failure() #here we specify "if" on th ejob level. So this job will run if any other job fails.
     # note that all jobs run in parallel, so this job might be skipped even though another job fails (it can happen because the job that will fail, will not be failed at the time "report" job is running). So jobs requires "need" part.

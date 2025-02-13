@@ -1,4 +1,5 @@
 name: Deploy website
+on: [workflow_dispatch]
   #push:
   #  branches:
   #   - main

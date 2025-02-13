@@ -1,0 +1,8 @@
+name: Deploy website
+on: workflow_call #here we specify this trigger as we want to use this workflow as part of a job in another workflow
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        run: echo "Deploying..."
