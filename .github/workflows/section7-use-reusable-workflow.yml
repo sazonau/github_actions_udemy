@@ -1,8 +1,8 @@
 name: Using reusable workflow
-on: 
-  push:
-    branches:
-      - main
+on: [workflow_dispatch] 
+  #push:
+  #  branches:
+  #    - main
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -69,6 +69,8 @@ jobs:
     uses: ./.github/workflows/section7-reusable-workflow.yml
     with:
       artifact-name: dist-files #here I specify what should be used as an input instead of the default value specified int he reusable workflow
+    #secrets:
+    #  some-secret: ${{ secrets.some-secret }} #here I specify a secret that should be (can be optional) used in the reusable workflow
   report:
     if: failure() #here we specify "if" on th ejob level. So this job will run if any other job fails.
     # note that all jobs run in parallel, so this job might be skipped even though another job fails (it can happen because the job that will fail, will not be failed at the time "report" job is running). So jobs requires "need" part.

@@ -9,6 +9,13 @@ on:
         required: false
         default: dist
         type: string
+    #outputs: #output can be set here to be used somewhere else
+    #  result:
+    #   description: The result of the deployment operation
+    #    value: ...
+    #secrets:
+    #  some-secret:
+    #    required: false
 jobs:
   deploy:
     runs-on: ubuntu-latest
