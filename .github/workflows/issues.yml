@@ -2,9 +2,9 @@
 ## the workflow outputs info about this event
 
 name: Output information
-on:
-  issues:
-    types: [opened]
+on: [workflow_dispatch]
+#  issues:
+#    types: [opened]
 jobs:
   info:
     runs-on: ubuntu-latest
